@@ -1,0 +1,39 @@
+# ---------------------------------------------------------------------------
+# FVR - Fourier-VMamba Restoration
+# Verified on Python 3.11.9
+#
+# torch/torchvision are deliberately NOT given an index URL here, because the
+# correct build differs per target: a CPU wheel locally, a CUDA wheel on the
+# cluster. Install torch FIRST, then run this file.
+#
+#   local (CPU, what this machine has):
+#     pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+#
+#   Wits HPC (match the tag to `nvcc --version`; cu121 shown as an example):
+#     module load cuda
+#     pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+#
+#   then, on both:
+#     pip install -r requirements.txt
+#
+# The fused selective-scan kernel is a separate, CUDA-only step; see
+# requirements-cuda.txt. FVR runs correctly without it, just slower.
+# ---------------------------------------------------------------------------
+
+# torch>=2.4 is a hard floor, not a preference:
+#   - torch.amp.GradScaler("cuda")            (train.py)  needs 2.4+
+#   - checkpoint(..., use_reentrant=False)    (vmamba.py) needs 2.1+
+torch>=2.4
+torchvision>=0.19
+
+# PSNR / SSIM
+torchmetrics>=1.0
+
+# NIQE (no-reference quality). Pulls in scipy, opencv-python, timm and einops.
+pyiqa>=0.1.10
+
+# FLOP counting for the conv/linear portion of evaluate.py
+thop>=0.1.1
+
+pillow>=9.0
+numpy>=1.24

@@ -1,0 +1,32 @@
+# ---------------------------------------------------------------------------
+# Fused selective-scan kernel - CUDA nodes ONLY (Wits HPC), never locally.
+#
+# FVR is fully functional without this file. models/vmamba.py falls back to a
+# pure-PyTorch scan that matches the sequential reference to 3.6e-15, so
+# correctness, FLOPs and the scaling exponents are identical either way.
+# The only thing this buys is wall-clock speed, and only on a GPU: the fast
+# path in SS2D.forward_core is guarded by `x.is_cuda`, so on a CPU-only box
+# the kernel would never even be called.
+#
+# Install AFTER a CUDA build of torch is already present:
+#
+#     module load cuda                  # match the tag below to `nvcc --version`
+#     pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+#     pip install -r requirements.txt
+#     pip install -r requirements-cuda.txt --no-build-isolation
+#
+# --no-build-isolation is REQUIRED. mamba-ssm's setup.py does `import torch` at
+# build time to detect your CUDA version, but PEP 517 builds run in an isolated
+# environment with no torch installed. Without the flag the build dies with
+# `ModuleNotFoundError: No module named 'torch'` before compilation even starts.
+#
+# packaging and ninja must be importable before the build begins, which is why
+# they are listed here and not left to the resolver.
+# ---------------------------------------------------------------------------
+
+packaging>=23.0
+ninja
+setuptools>=70.1
+wheel
+
+mamba-ssm>=2.0

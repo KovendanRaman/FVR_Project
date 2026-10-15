@@ -1,0 +1,23 @@
+# Datasets (130GB — never commit)
+data/
+
+# Logs
+*.log
+slurm-*.out
+
+# Python cruft
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Env backups / archives / containers
+*.tar.gz
+*.zip
+*.sif
+
+# OS / editor junk
+.DS_Store
+*.swp
+*~
+.claude/
