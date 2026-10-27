@@ -1,23 +1,23 @@
-# Datasets (130GB — never commit)
+# logs
+*.log
+
+# model checkpoints (too large for git)
+checkpoints*/
+
+# datasets
 data/
 
-# Logs
-*.log
-slurm-*.out
-
-# Python cruft
+# python cache
 __pycache__/
-*.py[cod]
-*.egg-info/
-.ipynb_checkpoints/
+*.pyc
 
-# Env backups / archives / containers
+# bulky qualitative image outputs
+qualitative/
+qualitative_paper/
+qualitative_report/
+
+# archives, container images, env dumps
 *.tar.gz
-*.zip
 *.sif
-
-# OS / editor junk
-.DS_Store
-*.swp
-*~
+working_env_*.txt
 .claude/

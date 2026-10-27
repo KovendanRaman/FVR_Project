@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader
 from models.fvr_net import FVRNet
 from models.vmamba import SELECTIVE_SCAN_BACKEND
 from utils.dataset import split_dataset
+from utils.losses import RestorationLoss
 
 
 def build_args():
@@ -35,6 +36,7 @@ def build_args():
     parser.add_argument("--grad-clip", type=float, default=1.0)
     parser.add_argument("--num-workers", type=int, default=4)
     parser.add_argument("--amp", action="store_true", help="mixed precision (CUDA only)")
+    parser.add_argument("--loss", choices=["l1","combined"], default="l1")
 
     parser.add_argument("--out-dir", default="./checkpoints")
     parser.add_argument("--resume", default=None)
@@ -87,7 +89,8 @@ def train_fvr(args):
 
     optimizer = optim.AdamW(model.parameters(), lr=args.lr,
                             weight_decay=args.weight_decay)
-    criterion = nn.L1Loss()
+    criterion = RestorationLoss() if args.loss == "combined" else nn.L1Loss()
+    val_criterion = nn.L1Loss()
 
     print("Initializing Data Loaders...")
     train_dataset, val_dataset = split_dataset(
@@ -156,7 +159,7 @@ def train_fvr(args):
 
         monitored = avg_loss
         if val_loader is not None:
-            val_loss = validate(model, val_loader, criterion, device)
+            val_loss = validate(model, val_loader, val_criterion, device)
             message += f" | Val L1: {val_loss:.4f}"
             monitored = val_loss
         print(message)
